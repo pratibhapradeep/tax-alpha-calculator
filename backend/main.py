@@ -99,6 +99,38 @@ def fetch_stock_data(symbol):
     data, meta_data = ts.get_daily(symbol=symbol, outputsize='compact')
     return data
 
+
+@app.route('/create_link_token')
+def get_link_token():
+    """
+    Endpoint to get Plaid Link token.
+
+    Returns:
+        JSON: JSON response with the generated link token.
+    """
+    link_token = create_link_token()
+    return jsonify({'link_token': link_token})
+
+@app.route('/calculate_taxes', methods=['POST'])
+def calculate_taxes_route():
+    """
+    Endpoint to calculate taxes based on provided income, investment data, and tax brackets.
+
+    Returns:
+        JSON: JSON response with the calculated tax amount.
+    """
+    data = request.get_json()
+
+    income = data['income']  # Get income from the request
+    tax_brackets = data['tax_brackets']  # Get tax brackets from the request
+    investment_holdings = fetch_investment_holdings()  # Fetch investment data
+
+    # Create an instance of TaxCalculator and calculate the taxes
+    tax_calculator = TaxCalculator(income, investment_holdings, tax_brackets)
+    tax_due = tax_calculator.calculate_taxes()
+
+    return jsonify({'tax_due': tax_due})
+
 @app.route('/')
 def home():
     return "Welcome to Tax Alpha Sandbox Testing!"
