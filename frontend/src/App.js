@@ -1,20 +1,30 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import './styles/App.css';  // Import the CSS file
+import './styles/App.css';  // Import the CSS file for styling
 
+/**
+ * Main App Component
+ * Handles user inputs, makes API requests, and manages state for the application.
+ *
+ * @returns {JSX.Element} - The rendered component
+ */
 function App() {
-  const [publicToken, setPublicToken] = useState('');
-  const [investmentData, setInvestmentData] = useState(null);
-  const [harvestingSuggestions, setHarvestingSuggestions] = useState([]);
-  const [taxData, setTaxData] = useState(null);
-  const [stockSymbol, setStockSymbol] = useState('');
-  const [stockPrice, setStockPrice] = useState(null);
+  // State variables to manage user input and API response data
+  const [publicToken, setPublicToken] = useState('');  // Plaid public token input by the user
+  const [investmentData, setInvestmentData] = useState(null);  // Investment data fetched from backend
+  const [harvestingSuggestions, setHarvestingSuggestions] = useState([]);  // Suggestions for tax loss harvesting
+  const [taxData, setTaxData] = useState(null);  // Calculated tax data
+  const [stockSymbol, setStockSymbol] = useState('');  // Stock symbol input by the user
+  const [stockPrice, setStockPrice] = useState(null);  // Stock price data fetched from backend
 
-    // New states for user input for tax calculation
-  const [income, setIncome] = useState('');
-  const [taxBrackets, setTaxBrackets] = useState('');
+  const [income, setIncome] = useState('');  // User input for income
+  const [taxBrackets, setTaxBrackets] = useState('');  // User input for tax brackets
 
-    const handleInvestmentData = async () => {
+  /**
+   * Fetches investment data using the Plaid API.
+   * Sends a POST request to the backend with the user's Plaid public token.
+   */
+  const handleInvestmentData = async () => {
     try {
       const response = await axios.post('/api/investments', { public_token: publicToken });
       setInvestmentData(response.data);
@@ -22,7 +32,12 @@ function App() {
       console.error('Error fetching investment data:', error);
     }
   };
-      const handleTaxLossHarvesting = async () => {
+
+  /**
+   * Fetches tax loss harvesting suggestions based on the user's investment data.
+   * Sends a POST request to the backend with the investment data.
+   */
+  const handleTaxLossHarvesting = async () => {
     if (investmentData) {
       try {
         const response = await axios.post('/api/tax_loss_harvesting', { investment_data: investmentData });
@@ -32,7 +47,12 @@ function App() {
       }
     }
   };
-        const handleStockPrice = async () => {
+
+  /**
+   * Fetches stock price data using Alpha Vantage API.
+   * Sends a GET request to the backend with the stock symbol provided by the user.
+   */
+  const handleStockPrice = async () => {
     try {
       const response = await axios.get('/api/stock_price', { params: { symbol: stockSymbol } });
       setStockPrice(response.data);
@@ -41,22 +61,25 @@ function App() {
     }
   };
 
-         const fetchTaxData = () => {
-    // Convert tax brackets input to array format
+  /**
+   * Fetches tax data based on user input for income and tax brackets.
+   * Sends a POST request to the backend with the user's income and parsed tax brackets.
+   */
+  const fetchTaxData = () => {
     const bracketsArray = taxBrackets.split(',').map(bracket => {
       const [rate, threshold] = bracket.split(':').map(Number);
       return [rate, threshold];
     });
 
     axios.post('/calculate_taxes', {
-      income: parseFloat(income),  // User-inputted income
-      tax_brackets: bracketsArray  // User-inputted tax brackets
+      income: parseFloat(income),
+      tax_brackets: bracketsArray
     })
     .then(response => setTaxData(response.data))
     .catch(error => console.error('Error calculating taxes:', error));
   };
 
-         return (
+  return (
     <div>
       <h1>Welcome to Tax Alpha Calculator</h1>
 
