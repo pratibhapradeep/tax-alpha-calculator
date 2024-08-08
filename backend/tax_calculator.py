@@ -39,3 +39,37 @@ class TaxCalculator:
                 total_income = threshold
 
         return tax_due
+
+    def suggest_tax_loss_harvesting(investment_data):
+        """
+        Suggests securities to sell for tax loss harvesting.
+
+        Parameters
+        ----------
+        investment_data : list
+            A list of investment accounts and their associated data.
+
+        Returns
+        -------
+        dict
+            A dictionary containing securities suggested for tax loss harvesting.
+        """
+        suggestions = []
+
+        for account in investment_data:
+            for security in account.get('securities', []):
+                total_loss = 0
+                for transaction in security.get('transactions', []):
+                    if transaction['type'] == 'sell':
+                        buy_price = transaction['cost_basis']
+                        sell_price = transaction['price']
+                        if sell_price < buy_price:
+                            total_loss += (buy_price - sell_price)
+
+                if total_loss > 0:
+                    suggestions.append({
+                        'security_name': security['name'],
+                        'total_loss': total_loss
+                    })
+
+        return suggestions
