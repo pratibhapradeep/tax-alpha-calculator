@@ -3,10 +3,14 @@ class TaxCalculator:
         """
         Initializes the TaxCalculator with income, investment data, and tax brackets.
 
-        Args:
-            income (float): The user's annual income.
-            investment_data (list): A list of investment holdings data.
-            tax_brackets (list): A list of tuples representing tax brackets [(rate, threshold), ...].
+        Parameters
+        ----------
+        income : float
+            The user's annual income.
+        investment_data : list
+            A list of investment holdings data.
+        tax_brackets : list
+            A list of tuples representing tax brackets [(rate, threshold), ...].
         """
         self.income = income
         self.investment_data = investment_data
@@ -16,8 +20,10 @@ class TaxCalculator:
         """
         Calculates the total investment gains from the investment data.
 
-        Returns:
-            float: Total investment gains.
+        Returns
+        -------
+        float
+            Total investment gains.
         """
         return sum([holding['current_value'] - holding['cost_basis'] for holding in self.investment_data])
 
@@ -25,14 +31,15 @@ class TaxCalculator:
         """
         Calculates the total tax due based on income, investment gains, and tax brackets.
 
-        Returns:
-            float: The calculated tax amount.
+        Returns
+        -------
+        float
+            The calculated tax amount.
         """
         total_gains = self.calculate_investment_gains()
         total_income = self.income + total_gains
         tax_due = 0.0
 
-        # Calculate tax based on income and tax brackets
         for rate, threshold in self.tax_brackets:
             if total_income > threshold:
                 tax_due += (total_income - threshold) * rate
@@ -40,23 +47,18 @@ class TaxCalculator:
 
         return tax_due
 
-    def suggest_tax_loss_harvesting(investment_data):
+    def suggest_tax_loss_harvesting(self):
         """
         Suggests securities to sell for tax loss harvesting.
 
-        Parameters
-        ----------
-        investment_data : list
-            A list of investment accounts and their associated data.
-
         Returns
         -------
-        dict
-            A dictionary containing securities suggested for tax loss harvesting.
+        list
+            A list of dictionaries containing securities suggested for tax loss harvesting.
         """
         suggestions = []
 
-        for account in investment_data:
+        for account in self.investment_data:
             for security in account.get('securities', []):
                 total_loss = 0
                 for transaction in security.get('transactions', []):
