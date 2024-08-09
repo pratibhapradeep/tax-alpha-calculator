@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import './styles/App.css';  // Import the CSS file for styling
+import './App.css';  // Import the CSS file for styling
 
 /**
  * Main App Component
